@@ -7,37 +7,51 @@
 @stop
 
 @section('content')
+@if (session()->has('message'))
+<div class="alert alert-success alert-dismissible fade show"
+role="alert">
+{{session('message')}}
+
+<button type="button" class="close" data-dismiss="alert" aria-
+label="Close">
+
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+@endif
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('sitio.update', $site) }}" enctype="multipart/form-data" method="post">
+            <form action="{{ route('sitio.update', $sitio) }}" enctype="multipart/form-data" method="post">
                 @method('PUT')
                 @csrf
+
+               
 
                 <div class="row">
                     <div class="col-md-6 col-lg-6 col-sm-12">
                         <label for="">Municipio</label>
-                        <input type="text" name="municipio" class="form-control">
+                        <input type="text" name="municipio" value="{{$sitio->municipio}}" class="form-control">
 
                         <small class="text-danger">{{ $errors->first('municipio') }}</small>
                     </div>
 
                     <div class="col-md-6 col-lg-6 col-sm-12">
                         <label for="">Lugar</label>
-                        <input type="text" name="lugar" class="form-control">
+                        <input type="text" value="{{$sitio->lugar}}" name="lugar" class="form-control">
                         <small class="text-danger">{{ $errors->first('lugar') }}</small>
                     </div>
 
                     <div class="col-md-6 col-lg-6 col-sm-12">
                         <label for="">Nombre</label>
-                        <input type="text" name="nombre" class="form-control">
+                        <input type="text" name="nombre" value="{{$sitio->nombre}}" class="form-control">
 
                         <small class="text-danger">{{ $errors->first('nombre') }}</small>
                     </div>
 
                     <div class="col-md-6 col-lg-6 col-sm-12">
                         <label>Descripcion</label>
-                        <input type="text" name="descripcion" class="form-control">
+                        <input type="text" name="descripcion" value="{{$sitio->descripcion}}" class="form-control">
 
                         <small class="text-danger">{{ $errors->first('descripcion') }}</small>
                     </div>
@@ -121,27 +135,26 @@ awesome/5.15.3/css/all.min.css">
         console.log('Hi!');
     </script>
 
-    
-<script>
 
-    function ocultarAlerta() {
-    document.querySelector(".alert").style.display
-    
-    = 'none';
-    }
-    setTimeout(ocultarAlerta,3000);
-    // vista previa de la imagen
-    let vistaPrevia = ()=>{
-    let leerImg = new FileReader();
-    
-    let id_img = document.getElementById('img-foto');
-    
-    leerImg.onload = ()=>{
-    if (leerImg.readyState == 2) {
-    id_img.src = leerImg.result;
-    }
-    }
-    leerImg.readAsDataURL(event.target.files[0])
-    }
-</script>
+    <script>
+        function ocultarAlerta() {
+            document.querySelector(".alert").style.display
+
+            = 'none';
+        }
+        setTimeout(ocultarAlerta, 3000);
+        // vista previa de la imagen
+        let vistaPrevia = () => {
+            let leerImg = new FileReader();
+
+            let id_img = document.getElementById('img-foto');
+
+            leerImg.onload = () => {
+                if (leerImg.readyState == 2) {
+                    id_img.src = leerImg.result;
+                }
+            }
+            leerImg.readAsDataURL(event.target.files[0])
+        }
+    </script>
 @stop

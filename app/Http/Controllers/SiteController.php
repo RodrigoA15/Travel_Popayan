@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Service;
 use App\Models\Site;
 use Illuminate\Http\Request;
 
@@ -37,18 +38,18 @@ class SiteController extends Controller
     public function store(Request $request)
     {
         $validaciones = request()->validate([
-            'municipio' => 'required', 
+            'municipio' => 'required',
             'lugar' => 'required',
             'nombre' => 'required',
             'fotografia' => 'required',
             'descripcion' => 'required',
         ]);
 
-        if(isset($validaciones)){
+        if (isset($validaciones)) {
             $sitio = new Site();
             $sitio->municipio = $request->municipio;
             $sitio->lugar = $request->lugar;
-            $sitio->nombre =$request->nombre;
+            $sitio->nombre = $request->nombre;
             $fotografia = $request->file('fotografia');
             $fotografia->move('img', $fotografia->getClientOriginalName());
             $sitio->fotografia = $fotografia->getClientOriginalName();
@@ -66,9 +67,13 @@ class SiteController extends Controller
      * @param  \App\Models\Site  $site
      * @return \Illuminate\Http\Response
      */
-    public function show(Site $site)
+    public function show(Site $sitio)
     {
-        //
+        $services = 
+        Service::join("sites", "services.sitio_id", "=", "sites.id")->where("sitio_id", $sitio->id)
+        ->select("services.servicio", "services.precio")->get();
+
+        return view('sites.show', compact('services', 'sitio'));
     }
 
     /**
@@ -77,9 +82,9 @@ class SiteController extends Controller
      * @param  \App\Models\Site  $site
      * @return \Illuminate\Http\Response
      */
-    public function edit(Site $site)
+    public function edit(Site $sitio)
     {
-        return view('sites.edit', compact('site'));
+        return view('sites.edit', compact('sitio'));
     }
 
     /**
@@ -89,16 +94,37 @@ class SiteController extends Controller
      * @param  \App\Models\Site  $site
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Site $site)
+    public function update(Request $request, Site $sitio)
     {
         $validaciones = request()->validate([
-            'municipio' => 'required', 
+            'municipio' => 'required',
             'lugar' => 'required',
             'nombre' => 'required',
             'descripcion' => 'required',
-        ]); 
+        ]);
 
-     
+        if (isset($validaciones)) {
+
+            $sitio->municipio = $request->municipio;
+            $sitio->lugar = $request->lugar;
+            $sitio->nombre = $request->nombre;
+            $sitio->descripcion = $request->descripcion;
+
+            if (isset($request->fotografia)) {
+                $image_path = public_path() . '/img/' . $sitio->fotografia;
+                unlink($image_path);
+                $fotografia = $request->file('fotografia');
+                $fotografia->move('img', $fotografia->getClientOriginalName());
+                $sitio->fotografia = $fotografia->getClientOriginalName();
+            } else {
+                $sitio->fotografia = $sitio->fotografia;
+            }
+
+            $sitio->save();
+        }
+
+        session()->flash('update', 'Sitio actualizado satisfactoriamente');
+        return redirect()->route('sitio.index');
     }
 
     /**
@@ -107,8 +133,14 @@ class SiteController extends Controller
      * @param  \App\Models\Site  $site
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Site $site)
+    public function destroy(Site $sitio)
     {
-        //
+        $image_path = public_path() . '/img/' . $sitio->fotografia;
+
+        unlink($image_path);
+        $sitio->delete();
+        session()->flash('message', 'Sitio eliminado correctamente!!');
+
+        return redirect()->route('sitio.index');
     }
 }

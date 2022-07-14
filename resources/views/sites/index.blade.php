@@ -28,6 +28,10 @@ label="Close">
         <th scope="col">Nombre</th>
         <th scope="col">Descripcion</th>
         <th scope="col">Fotografia</th>
+        <th scope="col">Editar</th>
+        
+
+        
 
       </tr>
     </thead>
@@ -46,15 +50,17 @@ label="Close">
             </div>
         </td>
 
-        <td class="grid"><a href="{{route('sitio.edit', $site)}}" class="btn btn-secondary"><i class="far fa-edit"></i></a>
+        <td class="grid"><a href="{{route('sitio.edit', $sitio)}}" class="btn btn-secondary"><i class="far fa-edit"></i></a>
 
-            <form action="{{route('sitio.destroy', $site)}}" method="POST">
+            <form action="{{route('sitio.destroy', $sitio)}}" method="POST">
                 {{ csrf_field() }}
                 @method('delete')
                 <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
             </form>
 
         </td>
+
+        <td><a href="{{route('sitio.show', $sitio)}}">{{$sitio->nombre}}</a></td>
 
       </tr>
       @endforeach
